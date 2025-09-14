@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CMD Store - Muzan CMD</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-dark: #1a1a2e;
+            --secondary-dark: #16213e;
+            --accent-dark: #0f3460;
+            --neon-accent: #e94560;
+            --neon-blue: #00d4ff;
+            --glass-bg: rgba(255, 255, 255, 0.1);
+            --glass-border: rgba(255, 255, 255, 0.2);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, var(--primary-dark) 0%, var(--secondary-dark) 50%, var(--accent-dark) 100%);
+            min-height: 100vh;
+            color: white;
+            overflow-x: hidden;
+        }
+
+        .header {
+            padding: 1rem 2rem;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--glass-border);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 700;
+            background: linear-gradient(45deg, var(--neon-blue), var(--neon-accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            padding: 0.5rem 1rem;
+            border-radius: 25px;
+        }
+
+        .nav-links a:hover {
+            background: var(--glass-bg);
+            color: var(--neon-blue);
+            transform: translateY(-2px);
+        }
+
+        .main-content {
+            padding: 4rem 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .page-title {
+            text-align: center;
+            font-size: 2.5rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            animation: fadeInUp 1s ease-out;
+        }
+
+        .page-subtitle {
+            text-align: center;
+            opacity: 0.8;
+            margin-bottom: 3rem;
+            font-size: 1.1rem;
+            animation: fadeInUp 1s ease-out 0.2s both;
+        }
+
+        .commands-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 2rem;
+        }
+
+        .command-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(15px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 2rem;
+            transition: all 0.3s ease;
+            animation: fadeInUp 1s ease-out 0.4s both;
+        }
+
+        .command-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0, 212, 255, 0.2);
+            border-color: var(--neon-blue);
+        }
+
+        .command-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .command-icon {
+            font-size: 2rem;
+            margin-right: 1rem;
+            background: linear-gradient(45deg, var(--neon-blue), var(--neon-accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .command-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .command-preview {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 1rem;
+            margin: 1rem 0;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            line-height: 1.4;
+            color: #00ff88;
+        }
+
+        .command-details {
+            max-height: 0;
+            overflow: hidden;
+            transition: all 0.5s ease;
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 10px;
+            margin: 1rem 0;
+        }
+
+        .command-details.expanded {
+            max-height: 500px;
+            padding: 1rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .command-code {
+            font-family: 'Courier New', monospace;
+            font-size: 0.85rem;
+            line-height: 1.5;
+            color: #00ff88;
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+
+        .command-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-details {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: 1px solid var(--glass-border);
+        }
+
+        .btn-details:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .btn-download {
+            background: linear-gradient(45deg, var(--neon-accent), var(--neon-blue));
+            color: white;
+        }
+
+        .btn-download:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(233, 69, 96, 0.3);
+        }
+
+        .coming-soon {
+            text-align: center;
+            margin-top: 3rem;
+            padding: 2rem;
+            background: var(--glass-bg);
+            backdrop-filter: blur(15px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            animation: fadeInUp 1s ease-out 0.6s both;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .commands-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .command-actions {
+                flex-direction: column;
+            }
+            
+            .main-content {
+                padding: 2rem 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">MUZAN CMD</div>
+            <nav>
+                <ul class="nav-links">
+                    <li><a href="dashboard.html">Dashboard</a></li>
+                    <li><a href="cmd.html">Commands</a></li>
+                    <li><a href="contact.html">Contact</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <h1 class="page-title">Command Store</h1>
+        <p class="page-subtitle">Premium commands for GoatBot v2 and other messenger bots</p>
+        
+        <div class="commands-grid">
+            <div class="command-card">
+                <div class="command-header">
+                    <div class="command-icon">
+                        <i class="fas fa-lock"></i>
+                    </div>
+                    <h3 class="command-title">jail.js</h3>
+                </div>
+                
+                <div class="command-preview">
+// Jail Command Preview
+module.exports = {
+  config: {
+    name: "jail",
+    version: "1.0.0",
+    hasPermssion: 0,
+    credits: "Muzan",
+    description: "Jail a user with fun animation"
+  }
+}
+                </div>
+                
+                <div class="command-details" id="jailDetails">
+                    <div class="command-code">module.exports = {
+  config: {
+    name: "jail",
+    version: "1.0.0",
+    hasPermssion: 0,
+    credits: "Muzan",
+    description: "Jail a user with fun animation",
+    commandCategory: "fun",
+    usages: "[tag user]",
+    cooldowns: 5
+  },
+
+  run: async function({ api, event, args }) {
+    const { threadID, messageID, senderID } = event;
+    
+    let mention = Object.keys(event.mentions)[0] || senderID;
+    
+    if (!mention) {
+      return api.sendMessage("Please tag someone to jail!", threadID, messageID);
+    }
+    
+    const Canvas = require("canvas");
+    const fs = require("fs");
+    const axios = require("axios");
+    
+    try {
+      // Get user avatar
+      const avatar = await axios.get(`https://graph.facebook.com/${mention}/picture?width=512&height=512&access_token=6628568379%7Cc1e620fa708a1d5696fb991c1bde5662`, { responseType: "arraybuffer" });
+      
+      // Create canvas
+      const canvas = Canvas.createCanvas(400, 400);
+      const ctx = canvas.getContext("2d");
+      
+      // Load jail overlay
+      const jailImg = await Canvas.loadImage("https://i.imgur.com/QbWqvzr.png");
+      const userImg = await Canvas.loadImage(avatar.data);
+      
+      // Draw user avatar
+      ctx.drawImage(userImg, 0, 0, 400, 400);
+      
+      // Draw jail bars
+      ctx.drawImage(jailImg, 0, 0, 400, 400);
+      
+      const buffer = canvas.toBuffer();
+      
+      api.sendMessage({
+        body: `🔒 User has been jailed! 🔒`,
+        attachment: fs.createWriteStream(__dirname + "/cache/jail.png").end(buffer)
+      }, threadID, messageID);
+      
+    } catch (error) {
+      api.sendMessage("Error creating jail image!", threadID, messageID);
+    }
+  }
+};</div>
+                </div>
+                
+                <div class="command-actions">
+                    <button class="btn btn-details" onclick="toggleDetails('jailDetails', this)">
+                        <i class="fas fa-eye"></i> Details
+                    </button>
+                    <a href="cmd/jail.js" download="jail.js" class="btn btn-download">
+                        <i class="fas fa-download"></i> Download jail.js
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="coming-soon">
+            <h3 style="margin-bottom: 1rem;">
+                <i class="fas fa-plus-circle" style="color: var(--neon-blue);"></i>
+                More Commands Coming Soon
+            </h3>
+            <p style="opacity: 0.8;">
+                We're constantly adding new premium commands. 
+                Check back regularly for updates!
+            </p>
+        </div>
+    </main>
+
+    <script>
+        function toggleDetails(detailsId, button) {
+            const details = document.getElementById(detailsId);
+            const isExpanded = details.classList.contains('expanded');
+            
+            if (isExpanded) {
+                details.classList.remove('expanded');
+                button.innerHTML = '<i class="fas fa-eye"></i> Details';
+            } else {
+                details.classList.add('expanded');
+                button.innerHTML = '<i class="fas fa-eye-slash"></i> Hide Details';
+            }
+        }
+
+        // Smooth scrolling
+        document.documentElement.style.scrollBehavior = 'smooth';
+
+        // Add entrance animations on scroll
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.animationPlayState = 'running';
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.command-card, .coming-soon').forEach(el => {
+            observer.observe(el);
+        });
+    </script>
+</body>
+</html>
